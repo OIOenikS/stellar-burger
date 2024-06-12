@@ -36,10 +36,6 @@ export const checkUserAuth = createAsyncThunk(
     if (getCookie('accessToken')) {
       getUserApi()
         .then((res) => dispatch(setUser(res.user)))
-        .catch(() => {
-          deleteCookie('accessToken');
-          localStorage.clear();
-        })
         .finally(() => {
           dispatch(authChecked());
         });
@@ -90,6 +86,8 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = `Ошибка при логировании: ${action.error.message}`;
+        deleteCookie('accessToken');
+        localStorage.clear();
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.data = action.payload;
