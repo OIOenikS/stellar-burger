@@ -13,13 +13,13 @@ export const getIngredients = createAsyncThunk(
 export interface IIngredientsState {
   isIngredientsLoading: boolean;
   ingredients: TIngredient[];
-  ingredientData: TIngredient | null;
+  error: string;
 }
 
-const initialState: IIngredientsState = {
+export const initialState: IIngredientsState = {
   isIngredientsLoading: false,
   ingredients: [],
-  ingredientData: null
+  error: ''
 };
 
 const ingredientsSlice = createSlice({
@@ -33,13 +33,16 @@ const ingredientsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getIngredients.pending, (state) => {
       state.isIngredientsLoading = true;
+      state.error  = '';
     });
-    builder.addCase(getIngredients.rejected, (state) => {
+    builder.addCase(getIngredients.rejected, (state, action) => {
       state.isIngredientsLoading = false;
+      state.error  = `Ошибка: ${action.error.message}`;
     });
     builder.addCase(getIngredients.fulfilled, (state, action) => {
       state.isIngredientsLoading = false;
       state.ingredients = action.payload;
+      state.error  = '';
     });
   }
 });
