@@ -26,6 +26,25 @@ export type TOrder = {
   ingredients: string[];
 };
 
+export type TOrderOwner = {
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TOrderFullInfo = {
+  ingredients: TIngredient[];
+  _id: string;
+  owner: TOrderOwner;
+  status: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  number: number;
+  price: number;
+};
+
 export type TOrdersData = {
   orders: TOrder[];
   total: number;
@@ -38,3 +57,7 @@ export type TUser = {
 };
 
 export type TTabMode = 'bun' | 'sauce' | 'main';
+
+export type TErrorMessageProps = {
+  error: string;
+};

@@ -11,42 +11,46 @@ export const getIngredients = createAsyncThunk(
 );
 
 export interface IIngredientsState {
-  isIngredientsLoading: boolean;
   ingredients: TIngredient[];
-  ingredientData: TIngredient | null;
+  isLoading: boolean;
+  error: string;
 }
 
-const initialState: IIngredientsState = {
-  isIngredientsLoading: false,
+export const initialState: IIngredientsState = {
   ingredients: [],
-  ingredientData: null
+  isLoading: false,
+  error: ''
 };
 
-const ingredientsSlice = createSlice({
+export const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {},
   selectors: {
     selectIngredients: (state) => state.ingredients,
-    selectIsIngredientsLoading: (state) => state.isIngredientsLoading
+    selectIsLoading: (state) => state.isLoading,
+    selectError: (state) => state.error
   },
   extraReducers: (builder) => {
     builder.addCase(getIngredients.pending, (state) => {
-      state.isIngredientsLoading = true;
+      state.isLoading = true;
+      state.error = '';
     });
-    builder.addCase(getIngredients.rejected, (state) => {
-      state.isIngredientsLoading = false;
+    builder.addCase(getIngredients.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = `${action.error.message}`;
     });
     builder.addCase(getIngredients.fulfilled, (state, action) => {
-      state.isIngredientsLoading = false;
       state.ingredients = action.payload;
+      state.isLoading = false;
+      state.error = '';
     });
   }
 });
 
-export const { selectIngredients, selectIsIngredientsLoading } =
+export const { selectIngredients, selectIsLoading, selectError } =
   ingredientsSlice.selectors;
 
 export const {} = ingredientsSlice.actions;
 
-export const ingredientsReducers = ingredientsSlice.reducer;
+export const ingredientsReducer = ingredientsSlice.reducer;

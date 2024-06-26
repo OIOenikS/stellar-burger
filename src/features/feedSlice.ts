@@ -11,28 +11,44 @@ export interface IFeedState {
   orders: TOrder[];
   total: number;
   totalToday: number;
+  isLoading: boolean;
+  error: string;
 }
 
-const initialState: IFeedState = {
+export const initialState: IFeedState = {
   orders: [],
   total: 0,
-  totalToday: 0
+  totalToday: 0,
+  isLoading: false,
+  error: ''
 };
 
-const feedSlice = createSlice({
+export const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {},
   selectors: {
     selectFeedOrders: (state) => state.orders,
     selectTotalFeedOrders: (state) => state.total,
-    selectTotalTodayFeedOrders: (state) => state.totalToday
+    selectTotalTodayFeedOrders: (state) => state.totalToday,
+    selectIsLoading: (state) => state.isLoading,
+    selectError: (state) => state.error
   },
   extraReducers: (builder) => {
+    builder.addCase(getFeedOrders.pending, (state) => {
+      state.isLoading = true;
+      state.error = '';
+    });
+    builder.addCase(getFeedOrders.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = `${action.error.message}`;
+    });
     builder.addCase(getFeedOrders.fulfilled, (state, action) => {
       state.orders = action.payload.orders;
       state.total = action.payload.total;
       state.totalToday = action.payload.totalToday;
+      state.isLoading = false;
+      state.error = '';
     });
   }
 });
@@ -40,7 +56,9 @@ const feedSlice = createSlice({
 export const {
   selectFeedOrders,
   selectTotalFeedOrders,
-  selectTotalTodayFeedOrders
+  selectTotalTodayFeedOrders,
+  selectIsLoading,
+  selectError
 } = feedSlice.selectors;
 
-export const feedReducers = feedSlice.reducer;
+export const feedReducer = feedSlice.reducer;

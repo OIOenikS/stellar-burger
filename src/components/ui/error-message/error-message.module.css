@@ -1,0 +1,15 @@
+.container {
+  box-sizing: border-box;
+  font-family: 'Jet Brains Mono';
+  line-height: 24px;
+  color: #f2f2f3;
+}
+
+.notification {
+  font-size: 23px;
+}
+
+.error {
+  color: #ff0000;
+  font-size: 17px;
+}
