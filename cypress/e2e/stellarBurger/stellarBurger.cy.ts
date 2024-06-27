@@ -1,3 +1,5 @@
+const baseUrl = 'http://localhost:4000/';
+
 function getIngredientFilling() {
   return cy.get('[data-testid="643d69a5c3f7b9001cfa0941"]');
 }
@@ -22,7 +24,7 @@ describe('Тестирование добавления ингредиента �
     cy.intercept('GET', 'api/ingredients', {
       fixture: "ingredients.json",
     });
-    cy.visit('http://localhost:4000/');
+    cy.visit(baseUrl);
   });
 
   it('Добавление ингредиентов начинки в конструктор', function() {
@@ -72,7 +74,7 @@ describe('Проверяем работy модального окона', funct
     cy.intercept('GET', 'api/ingredients', {
       fixture: "ingredients.json",
     });
-    cy.visit('http://localhost:4000/');
+    cy.visit(baseUrl);
   });
 
   it('Открытие модального окна ингредиента', function() {
@@ -118,7 +120,7 @@ describe('Тест на создание заказа', function() {
       'refreshToken',
       '11111111111a3c4d31110a32ac9e05360c32af5e7e521111fc98244908a86130e72d0d5a11111111'
     );
-    cy.visit('http://localhost:4000/');
+    cy.visit(baseUrl);
   });
 
   it('Тест на сборку бургера и подтверждения заказа', function () {
