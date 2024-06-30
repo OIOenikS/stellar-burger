@@ -7,7 +7,7 @@ import {
   resetConstructorItems
 } from '../../features/burgerConstructorSlice';
 import {
-  selectOrderRequest,
+  selectIsLoading,
   selectOrderModalData,
   orderBurger,
   closeModalAfterOrderingBurger
@@ -23,7 +23,7 @@ export const BurgerConstructor: FC = () => {
   const isRegisteredUser = useSelector(userDataSelector) ? true : false;
   const navigate = useNavigate();
 
-  const orderRequest: boolean = useSelector(selectOrderRequest);
+  const orderRequest: boolean = useSelector(selectIsLoading);
 
   const orderModalData = useSelector(selectOrderModalData);
 

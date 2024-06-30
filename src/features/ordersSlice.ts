@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { TOrder } from '../utils/types';
+import { TOrder, TOrderFullInfo } from '../utils/types';
 import {
   getOrdersApi,
   getOrderByNumberApi,
@@ -21,8 +21,8 @@ export const getOrder = createAsyncThunk(
 
 export const orderBurger = createAsyncThunk(
   'order/createОrderBurger',
-  async (numberOrder: string[]) => {
-    const order = await orderBurgerApi(numberOrder);
+  async (ingredientsArray: string[]) => {
+    const order = await orderBurgerApi(ingredientsArray);
     return order;
   }
 );
@@ -30,11 +30,12 @@ export const orderBurger = createAsyncThunk(
 export interface IOrdersState {
   orders: TOrder[];
   orderData: TOrder;
-  orderRequest: boolean;
-  orderModalData: TOrder | null;
+  orderModalData: TOrderFullInfo | null;
+  isLoading: boolean;
+  error: string;
 }
 
-const initialState: IOrdersState = {
+export const initialState: IOrdersState = {
   orders: [],
   orderData: {
     _id: '',
@@ -45,11 +46,12 @@ const initialState: IOrdersState = {
     updatedAt: '',
     number: 0
   },
-  orderRequest: false,
-  orderModalData: null
+  orderModalData: null,
+  isLoading: false,
+  error: ''
 };
 
-const ordersSlice = createSlice({
+export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
@@ -59,25 +61,51 @@ const ordersSlice = createSlice({
   },
   selectors: {
     selectOrders: (state) => state.orders,
-    selectOrderRequest: (state) => state.orderRequest,
     selectOrderModalData: (state) => state.orderModalData,
-    selectOrderData: (state) => state.orderData
+    selectOrderData: (state) => state.orderData,
+    selectIsLoading: (state) => state.isLoading,
+    selectError: (state) => state.error
   },
   extraReducers: (builder) => {
+    builder.addCase(getOrders.pending, (state) => {
+      state.isLoading = true;
+      state.error = '';
+    });
+    builder.addCase(getOrders.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = `${action.error.message}`;
+    });
     builder.addCase(getOrders.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = '';
       state.orders = action.payload;
     });
+
     builder.addCase(orderBurger.pending, (state) => {
-      state.orderRequest = true;
+      state.isLoading = true;
+      state.error = '';
     });
-    builder.addCase(orderBurger.rejected, (state) => {
-      state.orderRequest = false;
+    builder.addCase(orderBurger.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = `${action.error.message}`;
     });
     builder.addCase(orderBurger.fulfilled, (state, action) => {
-      state.orderRequest = false;
+      state.isLoading = false;
+      state.error = '';
       state.orderModalData = action.payload.order;
     });
+
+    builder.addCase(getOrder.pending, (state) => {
+      state.isLoading = true;
+      state.error = '';
+    });
+    builder.addCase(getOrder.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = `${action.error.message}`;
+    });
     builder.addCase(getOrder.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = '';
       state.orderData = action.payload[0];
     });
   }
@@ -85,11 +113,12 @@ const ordersSlice = createSlice({
 
 export const {
   selectOrders,
-  selectOrderRequest,
   selectOrderModalData,
-  selectOrderData
+  selectOrderData,
+  selectIsLoading,
+  selectError
 } = ordersSlice.selectors;
 
 export const { closeModalAfterOrderingBurger } = ordersSlice.actions;
 
-export const ordersReducers = ordersSlice.reducer;
+export const ordersReducer = ordersSlice.reducer;
